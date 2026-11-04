@@ -16,3 +16,10 @@
 - Em produção, verificar confirmação de e-mail e URLs de retorno do Auth.
 
 A entrega é código-fonte funcional com integração preparada, mas não uma implantação validada em produção. Confira diferenças de escopo em README.md.
+
+## Tech Forge — 04/11/2026
+
+- Compilação Vite de produção e 9 testes de domínio aprovados.
+- Smoke Playwright/Edge com dados demonstrativos: dashboard, seis escolhas, revisão, salvar duas builds, comparar, editar, invalidar placa-mãe/RAM ao trocar socket, preservar rascunho na navegação, benchmarks e todas as páginas existentes.
+- Viewports 1440×1000 e 390×844; capturas conferidas, sem overflow horizontal no celular nem exceções JavaScript.
+- Nenhuma gravação no Supabase ou execução do desktop faz parte do smoke. Login real e gravação autenticada remota não são cobertos por estes testes.

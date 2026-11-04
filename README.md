@@ -1,14 +1,18 @@
 # IntraTech PC Builder — Web
 
-HTML, CSS e JavaScript ES Modules. Sem React, Java, npm install ou build obrigatório.
-Código versionado no GitHub. A integração web foi ativada no Supabase em 04/11/2026, preservando o acesso JDBC do desktop. Não foi publicado na Vercel.
+Interface Tech Forge com React, Tailwind CSS 3.4 e Vite. Sidebar, dashboard e montador são componentes React; os demais fluxos mantêm os módulos JavaScript existentes durante a migração incremental. Fontes são locais, sem requisições ao Google Fonts.
 
 ## Executar
 
-Abra um terminal nesta pasta e execute `python -m http.server 8080` (ou `python3`).
-Acesse http://localhost:8080. Também funciona com Live Server no VS Code.
-Não abra index.html por file://: módulos JavaScript precisam de um servidor HTTP.
-Escolha **Explorar demonstração local** para testar sem configuração. Dados e preços desse modo são fictícios e ficam no localStorage, separados do banco real.
+Use Node 24 e execute na raiz:
+
+```sh
+npm ci
+npm run dev
+```
+
+Abra o endereço exibido pelo Vite. Para produção: `npm run build`; para conferir a compilação: `npm run preview`.
+Escolha **Explorar demonstração local** para testar com dados fictícios no localStorage, sem escrever no Supabase.
 
 ## Ativar Supabase
 
@@ -32,7 +36,22 @@ O SQL libera leitura do catálogo somente para contas autenticadas, manutenção
 
 ## Publicar na Vercel
 
-Crie outro repositório quando desejar e adicione o conteúdo desta pasta na raiz. Na Vercel, importe esse repositório, selecione **Other**, deixe Build Command vazio e use a raiz como diretório de saída. Não há variáveis de ambiente obrigatórias: `js/config.js` contém apenas configuração pública. Navegação por hash dispensa rewrites de SPA. Atualize as URLs de Authentication no Supabase para o domínio final. A conexão do plugin não aplica automaticamente SQL nem publica o pacote.
+Projeto: `intratech-web`. Site: https://intratech-web.vercel.app.
+Framework Vite; instalação `npm ci`; build `npm run build`; saída `dist`.
+O pacote publicado contém somente os arquivos compilados e os recursos públicos; scripts SQL e testes não são servidos.
+O GitHub ainda precisa ser autorizado na integração da Vercel para publicação automática. O envio direto usa exatamente os arquivos de `dist` gerados a partir do commit informado.
+`js/config.js` contém apenas URL e chave pública. Nenhuma senha de banco ou chave de serviço é necessária no navegador.
+
+## Design System Tech Forge
+
+- Tokens: `tailwind.config.js`; estilos: `js/forge.css`.
+- Componentes React: `js/forge.jsx` (Sidebar, Builder, Dashboard e HardwareImage).
+- Integração com a navegação e os fluxos existentes: `js/app.js`. As raízes React são desmontadas antes de substituir seu DOM.
+- Recursos estáticos: `public/assets`; SDK Supabase existente: `public/vendor`.
+- Fundo obsidian, painéis zinc, accent azul elétrico, roxo para 1% low; valores em JetBrains Mono, títulos em Space Grotesk e texto em Inter.
+- Estados de seleção incluem texto/check; skeleton respeita redução de movimento. As etapas do montador são navegáveis por teclado; resumo fixo em telas grandes.
+- A montagem reutiliza `js/domain.js`; não há alteração das regras de preços, consumo, compatibilidade, autorização ou persistência.
+- Builds desktop continuam nas tabelas legadas. Esta refatoração não executa SQL nem muda dados, contas ou permissões.
 
 ## Funcionalidades
 
@@ -60,6 +79,6 @@ Crie outro repositório quando desejar e adicione o conteúdo desta pasta na rai
 
 ## Verificação
 
-Execute `npm test` com Node moderno (sem instalar dependências). Os testes verificam as regras de negócio portadas do Java. Consulte `VALIDACAO.md` para resultados e limites desta entrega.
+Execute `npm ci` e `npm test` com Node 24. `npm run test:ui` verifica a compilação local no Microsoft Edge, com `npm run preview` em http://127.0.0.1:4173. As capturas ficam em `test-results/` e não são versionadas. Os testes verificam as regras de negócio portadas do Java. Consulte `VALIDACAO.md` para resultados e limites desta entrega.
 
 Referências: https://supabase.com/docs/reference/javascript/auth-signinwithpassword e https://supabase.com/docs/guides/database/postgres/row-level-security.
