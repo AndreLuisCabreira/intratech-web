@@ -18,7 +18,7 @@ try {
     await page.locator('nav a[href="#montar"]').click();
     for(let i=0;i<6;i++) {
       await page.getByRole('button',{name:'Selecionar',exact:true}).first().click();
-      await page.getByRole('button',{name:'Continuar',exact:true}).click();
+      await page.getByRole('group',{name:'Navegação da montagem'}).getByRole('button',{name:'Continuar',exact:true}).click();
     }
     await page.getByLabel('Nome da build').fill(name);
     if(name==='Projeto Obsidian')await page.screenshot({path:'test-results/builder-desktop.png',fullPage:true});
@@ -58,6 +58,18 @@ try {
   await page.locator('.hardware-card').first().waitFor();
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Overflow horizontal no celular');
   await page.screenshot({path:'test-results/builder-mobile.png',fullPage:true});
+  // A long catalogue must not hide progression after selecting the last item.
+  await page.evaluate(()=>{const key='intratech-demo-v1';const data=JSON.parse(localStorage.getItem(key));const cpu=data.processador[0];data.processador=Array.from({length:24},(_,i)=>({...cpu,id:10000+i,nome:`Processador de teste ${i+1}`}));localStorage.setItem(key,JSON.stringify(data));});
+  await page.reload();
+  await page.getByRole('button',{name:'Explorar demonstração local'}).click();
+  await page.locator('.hardware-card').last().getByRole('button',{name:'Selecionar',exact:true}).click();
+  const topControls=page.getByRole('group',{name:'Navegação da montagem'});
+  const box=await topControls.boundingBox();
+  assert.ok(box.y>=60&&box.y+box.height<844,'Navegação fixa visível após selecionar no fim da lista');
+  await topControls.getByRole('button',{name:'Continuar',exact:true}).click();
+  await page.getByRole('heading',{name:'Placa-mãe',exact:true}).waitFor();
+  await topControls.getByRole('button',{name:'Voltar',exact:true}).click();
+  await page.getByRole('button',{name:'Selecionado',exact:true}).waitFor();
   assert.deepEqual(errors,[]);
   console.log('PASS: dashboard, montagem completa, salvar duas builds, comparar, editar, benchmarks, navegação e mobile sem erros JavaScript.');
 } finally { await browser.close(); }

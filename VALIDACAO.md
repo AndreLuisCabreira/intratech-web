@@ -26,3 +26,6 @@ A entrega é código-fonte funcional com integração preparada, mas não uma im
 
 ## Dashboard e microtextos — 09/11/2026
 Textos mais naturais, cards com miniaturas ilustradas das builds, marcas do catalogo, capas dos jogos e FPS registrado. Build Vite, 9 testes de dominio e smoke Edge desktop/mobile aprovados. Sem alteracoes no Supabase ou desktop.
+
+## Navegação do montador — 09/11/2026
+Voltar e Continuar no topo, fixos durante a rolagem, também mantidos no rodapé. Avanço exige uma peça selecionada. Smoke inclui catálogo de 24 CPUs no celular, seleção no fim da lista, avanço e retorno com seleção preservada. Sem alteração de banco ou desktop.
