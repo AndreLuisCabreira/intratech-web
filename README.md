@@ -82,3 +82,6 @@ O GitHub ainda precisa ser autorizado na integração da Vercel para publicaçã
 Execute `npm ci` e `npm test` com Node 24. `npm run test:ui` verifica a compilação local no Microsoft Edge, com `npm run preview` em http://127.0.0.1:4173. As capturas ficam em `test-results/` e não são versionadas. Os testes verificam as regras de negócio portadas do Java. Consulte `VALIDACAO.md` para resultados e limites desta entrega.
 
 Referências: https://supabase.com/docs/reference/javascript/auth-signinwithpassword e https://supabase.com/docs/guides/database/postgres/row-level-security.
+
+### Dashboard — 09/11/2026
+Cards usam o conteudo da conta: builds recentes, marcas presentes, capas dos jogos e amostra dos benchmarks. Miniaturas dos computadores sao ilustracoes, nao fotos. Microtextos priorizam Montar meu PC e Iniciar nova build.

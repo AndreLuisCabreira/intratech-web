@@ -10,7 +10,7 @@ page.on('pageerror',e=>errors.push(e.message));
 try {
   await page.goto(url);
   await page.getByRole('button',{name:'Explorar demonstração local'}).click();
-  await page.getByRole('heading',{name:/O próximo nível/}).waitFor();
+  await page.getByRole('heading',{name:/Seu próximo PC/}).waitFor();
   await page.evaluate(()=>document.fonts.ready);
   await fs.mkdir('test-results',{recursive:true});
   await page.screenshot({path:'test-results/dashboard-desktop.png',fullPage:true});
@@ -25,6 +25,11 @@ try {
     await page.getByRole('button',{name:'Salvar minha build'}).click();
     await page.getByRole('heading',{name,exact:true}).waitFor();
   }
+  await page.locator('nav a[href="#dashboard"]').click();
+  await page.getByRole('heading',{name:'2 PCs salvos'}).waitFor();
+  assert.equal(await page.locator('.build-preview-card .build-thumbnail').count(),2);
+  assert.equal(await page.getByRole('link',{name:'Montar meu PC',exact:true}).count()>0,true);
+  await page.locator('nav a[href="#builds"]').click();
   await page.locator('[name=compare]').nth(0).check();
   await page.locator('[name=compare]').nth(1).check();
   await page.getByRole('button',{name:'Comparar lado a lado'}).click();
