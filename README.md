@@ -86,4 +86,6 @@ Referências: https://supabase.com/docs/reference/javascript/auth-signinwithpass
 ### Dashboard — 09/11/2026
 Cards usam o conteudo da conta: builds recentes, marcas presentes, capas dos jogos e amostra dos benchmarks. Miniaturas dos computadores sao ilustracoes, nao fotos. Microtextos priorizam Montar meu PC e Iniciar nova build.
 
-O montador mantém Voltar/Continuar visíveis em uma barra fixa no topo da lista, com o nome da peça selecionada. Os mesmos controles continuam disponíveis no final da lista.
+O montador mantém Voltar/Continuar visíveis em uma barra fixa no topo da lista, com o nome da peça selecionada. Voltar, Recomeçar e Continuar ficam somente na barra superior.
+
+Navegação superior: Voltar, Recomeçar e Continuar juntos; controles inferiores removidos. Smoke valida ausência de duplicatas e reinício da montagem.

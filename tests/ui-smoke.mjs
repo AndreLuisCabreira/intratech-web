@@ -64,12 +64,19 @@ try {
   await page.getByRole('button',{name:'Explorar demonstração local'}).click();
   await page.locator('.hardware-card').last().getByRole('button',{name:'Selecionar',exact:true}).click();
   const topControls=page.getByRole('group',{name:'Navegação da montagem'});
+  assert.equal(await page.getByRole('button',{name:'Voltar',exact:true}).count(),1);
+  assert.equal(await page.getByRole('button',{name:'Continuar',exact:true}).count(),1);
+  assert.equal(await topControls.getByRole('button',{name:'Recomeçar',exact:true}).count(),1);
   const box=await topControls.boundingBox();
   assert.ok(box.y>=60&&box.y+box.height<844,'Navegação fixa visível após selecionar no fim da lista');
   await topControls.getByRole('button',{name:'Continuar',exact:true}).click();
   await page.getByRole('heading',{name:'Placa-mãe',exact:true}).waitFor();
   await topControls.getByRole('button',{name:'Voltar',exact:true}).click();
   await page.getByRole('button',{name:'Selecionado',exact:true}).waitFor();
+  page.once('dialog',dialog=>dialog.accept());
+  await topControls.getByRole('button',{name:'Recomeçar',exact:true}).click();
+  assert.equal(await page.getByRole('button',{name:'Selecionado',exact:true}).count(),0);
+  assert.equal(await topControls.getByRole('button',{name:'Continuar',exact:true}).isDisabled(),true);
   assert.deepEqual(errors,[]);
   console.log('PASS: dashboard, montagem completa, salvar duas builds, comparar, editar, benchmarks, navegação e mobile sem erros JavaScript.');
 } finally { await browser.close(); }
