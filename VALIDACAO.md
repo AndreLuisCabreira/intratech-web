@@ -1,33 +1,33 @@
-# Verificações — 03/11/2026
+# Validação para publicação — 12/11/2026
 
-## Executadas
+A pasta fornecida para esta publicação foi C:\Users\Sylvie\Desktop\intratech-web. Ela foi comparada com a revisão local anterior e com o commit fee37871f042692ae11dbf7634508a8873de19ec do GitHub.
 
-- `node --test tests/*.test.js`: 9 testes aprovados, zero falhas. Consumo, margem de fonte, total monetário, invalidação de peças, completude, FPS exato/próximo/sem dados, orçamento e compatibilidade de memória.
-- `node --check js/app.js`, `node --check js/api.js`, `node --check js/domain.js`, `node --check js/demo.js`: sintaxe válida.
-- Inspeção do esquema e das políticas do projeto Supabase conectado via consultas somente de leitura. Existem as 11 tabelas desktop, com RLS e nenhuma policy. A API web requer a instalação SQL entregue. Não foi aplicado SQL nem alterado dado de produção.
-- SDK oficial e licença incluídos localmente; nenhuma dependência de CDN durante o uso.
+## Verificações locais
 
-## Não executadas / necessárias antes de produção
+- npm ci: instalação concluída; auditoria informou zero vulnerabilidades conhecidas nas dependências instaladas.
+- npm test: 14 testes aprovados, zero falhas, incluindo o agrupador da API e seus dois subtestes.
+- npm run build: concluído. Permanecem dois avisos da biblioteca lucide-react sobre a diretiva use client, já presentes na versão anterior.
+- Teste de interface no Microsoft Edge, com a saída de produção servida localmente: aprovado.
+- Fluxos cobertos: demonstração, dashboard, montagem e salvamento de duas builds, favoritas, comparação, exportação HTML individual e JSON pessoal, edição, invalidação de peças, preservação do rascunho, recomendações com orçamento suficiente/insuficiente, benchmarks e navegação.
+- Viewports de 1440 × 1000 e 390 × 844. O teste não detectou exceções JavaScript ou transbordamento horizontal no montador móvel. A navegação foi conferida com um catálogo de 24 CPUs.
+- git diff --check: sem erros.
+- A versão contém apenas a chave pública publishable do Supabase; não requer senha de banco ou chave de serviço no navegador.
 
-- Teste completo em navegador: Playwright estava disponível, mas sem Chromium. A instalação do navegador falhou ao baixar o arquivo. Não houve validação visual real nem teste automático de cliques.
-- Execução do SQL de instalação, cenários de RLS com duas contas, login/cadastro/troca de senha e persistência reais: não executados para preservar produção. Testar com duas contas e confirmar que cada uma só vê suas builds; usuários comuns não devem modificar catálogo.
-- Deploy e teste de domínio na Vercel: não solicitado; nada publicado.
-- Testar montagem, edição, favoritas, exclusão, comparação, exportações e navegação em desktop/mobile. O modo demonstrativo permite testar sem credenciais.
-- Em produção, verificar confirmação de e-mail e URLs de retorno do Auth.
+## Banco de dados
 
-A entrega é código-fonte funcional com integração preparada, mas não uma implantação validada em produção. Confira diferenças de escopo em README.md.
+A inspeção somente de leitura do projeto IntraTech PI confirmou as 12 tabelas públicas com RLS habilitado, políticas de catálogo para usuários autenticados, alterações administrativas baseadas em app_metadata, políticas por proprietário em web_build e o gatilho web_build_validation.
 
-## Tech Forge — 04/11/2026
+Os scripts de instalação não mudaram nesta versão. Não é necessário reaplicá-los, executar migrações ou alterar os dados para publicar esta revisão.
 
-- Compilação Vite de produção e 9 testes de domínio aprovados.
-- Smoke Playwright/Edge com dados demonstrativos: dashboard, seis escolhas, revisão, salvar duas builds, comparar, editar, invalidar placa-mãe/RAM ao trocar socket, preservar rascunho na navegação, benchmarks e todas as páginas existentes.
-- Viewports 1440×1000 e 390×844; capturas conferidas, sem overflow horizontal no celular nem exceções JavaScript.
-- Nenhuma gravação no Supabase ou execução do desktop faz parte do smoke. Login real e gravação autenticada remota não são cobertos por estes testes.
+As tabelas legadas usuario, build e componente_importado não têm permissões concedidas a anon/authenticated; os avisos informativos de ausência de policies nessas tabelas são coerentes com essa restrição.
 
-## Dashboard e microtextos — 09/11/2026
-Textos mais naturais, cards com miniaturas ilustradas das builds, marcas do catalogo, capas dos jogos e FPS registrado. Build Vite, 9 testes de dominio e smoke Edge desktop/mobile aprovados. Sem alteracoes no Supabase ou desktop.
+O verificador do Supabase informou que a proteção contra senhas vazadas está desabilitada. É uma melhoria de configuração independente desta publicação:
+https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
 
-## Navegação do montador — 09/11/2026
-Voltar e Continuar no topo, fixos durante a rolagem, sem duplicação no rodapé. Avanço exige uma peça selecionada. Smoke inclui catálogo de 24 CPUs no celular, seleção no fim da lista, avanço e retorno com seleção preservada. Sem alteração de banco ou desktop.
+## Limites
 
-Navegação superior: Voltar, Recomeçar e Continuar juntos; controles inferiores removidos. Smoke valida ausência de duplicatas e reinício da montagem.
+Os testes de interface usam dados fictícios no armazenamento local. Login, cadastro, confirmação de e-mail, troca de senha, gravação remota autenticada e isolamento entre contas não foram exercitados nesta publicação. A inspeção das políticas não substitui testes com duas contas.
+
+Não foram automatizadas todas as operações administrativas de importação/cadastro/exclusão, o download comparativo específico ou a impressão em PDF. Também não houve auditoria completa de acessibilidade ou de segurança.
+
+Os scripts SQL, imagens, licença e SDK foram preservados. Nenhuma funcionalidade ou tecnologia foi removida. A pasta original da Área de Trabalho foi mantida; a validação e publicação usam uma cópia.

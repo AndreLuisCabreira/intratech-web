@@ -1,91 +1,121 @@
-# IntraTech PC Builder — Web
+# IntraTech PC Builder — Projeto Integrador
 
-Interface Tech Forge com React, Tailwind CSS 3.4 e Vite. Sidebar, dashboard e montador são componentes React; os demais fluxos mantêm os módulos JavaScript existentes durante a migração incremental. Fontes são locais, sem requisições ao Google Fonts.
+Aplicação web para montar e comparar configurações de computadores. O objetivo é ajudar o usuário a escolher componentes compatíveis, acompanhar o custo da montagem e consultar o desempenho registrado nos benchmarks do catálogo.
 
-## Executar
+Uma **build** é uma configuração com processador, placa-mãe, memória RAM, placa de vídeo, SSD e fonte. Há um modo demonstrativo local e um modo conectado ao Supabase.
 
-Use Node 24 e execute na raiz:
+## Executar para avaliação
+
+Requisitos: Node.js 24, npm e um navegador atualizado. É necessário acesso à internet para instalar as dependências.
+
+Na pasta que contém `package.json`, execute:
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Abra o endereço exibido pelo Vite. Para produção: `npm run build`; para conferir a compilação: `npm run preview`.
-Escolha **Explorar demonstração local** para testar com dados fictícios no localStorage, sem escrever no Supabase.
+Abra o endereço informado no terminal e escolha **Explorar demonstração local**. Esse modo não exige conta nem configuração do banco. Os dados e preços são fictícios; as alterações ficam no armazenamento local do navegador e não são enviadas ao Supabase. Para restaurar a demonstração, remova apenas a chave `intratech-demo-v1` do localStorage nas ferramentas do navegador.
 
-## Ativar Supabase
+Para avaliar o fluxo principal:
 
-A configuração pública do projeto IntraTech PI já está em `js/config.js`. Se trocar de projeto, substitua URL e chave publishable. A chave é pública por definição; a proteção dos dados depende das políticas RLS. Nenhuma senha JDBC, chave secreta ou .env do ZIP está nesta pasta.
+1. Abra **Montar PC** e selecione as seis peças.
+2. Na revisão, informe um nome, marque como favorita se desejar e salve.
+3. Consulte **Minhas builds**, crie outra montagem e selecione duas para comparar.
+4. Explore o catálogo, os benchmarks e as recomendações por jogo.
 
-1. Faça backup do banco pelo painel do Supabase.
-2. No projeto IntraTech PI, a ativação web já foi aplicada; não execute novamente. Para outra instalação com o esquema do desktop, revise e execute **database/ativar-web.sql** no SQL Editor UMA vez. É uma instalação, não um script idempotente. Tudo é feito em transação. Em um projeto novo, execute antes `database/base-original.sql`, que cria o esquema original.
-3. Habilite o provedor e-mail/senha em Authentication. Configure Site URL e Redirect URLs para localhost e para o domínio final. Se confirmação de e-mail estiver ativa, confirme o cadastro pelo link recebido.
-4. Cadastre sua conta pela aplicação web. Use e-mail e senha: as contas desktop da tabela usuario não são contas do Supabase Auth.
-5. Para administrar catálogos, atribua `app_metadata.role = "admin"` à conta usando uma ferramenta administrativa confiável. Exemplo no SQL Editor, com o UUID real da conta Auth:
-
-```sql
-update auth.users
-set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"role":"admin"}'::jsonb
-where id = 'UUID-DA-CONTA';
-```
-
-Saia e entre novamente para renovar o token. Não use user_metadata para permissões. A primeira conta NÃO recebe admin automaticamente.
-
-O SQL libera leitura do catálogo somente para contas autenticadas, manutenção somente para administradores e builds somente para o proprietário. A validação de socket, memória e fonte ocorre também no servidor. A tabela `web_build` usa UUID do Auth; `usuario` e `build` antigas ficam intactas e sem acesso pela API. Não houve migração de contas, senhas ou builds desktop. O projeto conectado tinha categorias de componentes vazias; complete o catálogo antes de montar uma build real.
-
-## Publicar na Vercel
-
-Projeto: `intratech-web`. Site: https://intratech-web.vercel.app.
-Framework Vite; instalação `npm ci`; build `npm run build`; saída `dist`.
-O pacote publicado contém somente os arquivos compilados e os recursos públicos; scripts SQL e testes não são servidos.
-O GitHub ainda precisa ser autorizado na integração da Vercel para publicação automática. O envio direto usa exatamente os arquivos de `dist` gerados a partir do commit informado.
-`js/config.js` contém apenas URL e chave pública. Nenhuma senha de banco ou chave de serviço é necessária no navegador.
-
-## Design System Tech Forge
-
-- Tokens: `tailwind.config.js`; estilos: `js/forge.css`.
-- Componentes React: `js/forge.jsx` (Sidebar, Builder, Dashboard e HardwareImage).
-- Integração com a navegação e os fluxos existentes: `js/app.js`. As raízes React são desmontadas antes de substituir seu DOM.
-- Recursos estáticos: `public/assets`; SDK Supabase existente: `public/vendor`.
-- Fundo obsidian, painéis zinc, accent azul elétrico, roxo para 1% low; valores em JetBrains Mono, títulos em Space Grotesk e texto em Inter.
-- Estados de seleção incluem texto/check; skeleton respeita redução de movimento. As etapas do montador são navegáveis por teclado; resumo fixo em telas grandes.
-- A montagem reutiliza `js/domain.js`; não há alteração das regras de preços, consumo, compatibilidade, autorização ou persistência.
-- Builds desktop continuam nas tabelas legadas. Esta refatoração não executa SQL nem muda dados, contas ou permissões.
+Abrir `index.html` diretamente não inicia o sistema: use o servidor do Vite.
 
 ## Funcionalidades
 
-- Autenticação por e-mail, cadastro e troca de senha com reautenticação.
-- Dashboard com contagens reais do catálogo e builds da conta.
-- Catálogo com busca, categoria e limites de preço; cadastro, edição e exclusão administrativos.
-- Montagem guiada CPU → placa-mãe → RAM → GPU → SSD → fonte → revisão; peças incompatíveis são descartadas com aviso. Rascunho permanece ao navegar na sessão.
-- Salvamento, edição, favoritas e exclusão de builds; bloqueio de operações concorrentes; rascunho descartado somente após gravação confirmada.
-- Comparação de duas/três builds e exportação HTML individual; JSON pessoal.
-- Benchmarks com fonte, cenário e 1% low; análise exata ou referência com mesma GPU e CPU mais próxima. Sem dados, não inventa FPS.
-- Recomendações por resolução, FPS e orçamento, preservando preferências de capacidade e ordenação do algoritmo Java.
-- Importação de um componente JSON por vez, com formulário obrigatório de revisão e validação.
-- Tema claro/escuro e interface responsiva.
+- Cadastro e login por e-mail, saída da conta e alteração de senha com reautenticação no modo conectado.
+- Visão geral com contagens do catálogo e montagens recentes.
+- Catálogo com busca e filtros de categoria e preço.
+- Cadastro, edição e exclusão de componentes, jogos e benchmarks para administradores; na demonstração, essas operações são locais.
+- Montagem guiada com validação de socket, memória e fonte. Alterar uma peça descarta escolhas incompatíveis.
+- Salvamento, edição, favoritas e exclusão de builds. O rascunho permanece ao navegar durante a sessão.
+- Comparação de duas ou três builds, exportação HTML individual ou comparativa e exportação pessoal em JSON.
+- Consulta de FPS médio e 1% low com a fonte dos benchmarks; recomendações por jogo, resolução, meta de FPS e orçamento.
+- Importação de um componente JSON por vez, com revisão no formulário antes de salvar. Veja `exemplo-componente.json`.
+- Tema claro/escuro e navegação adaptada a telas menores.
 
-## Diferenças e limites da conversão
+## Tecnologias e organização
 
-- Autenticação passa a usar Supabase Auth; sem migração automática do login desktop.
-- Importação externa automática do pc-part-dataset não foi portada. Use um objeto JSON normalizado por componente; veja `exemplo-componente.json`. Não há conversão USD/BRL nem registro de deduplicação por ID externo. Conferir duplicatas antes de salvar.
-- Backup/restauração integral do desktop, com senhas de todos os usuários, foi substituído pelo backup administrativo no painel do Supabase. O site exporta somente builds pessoais. O JSON exportado é para consulta/portabilidade; não há restauração pessoal automática na interface.
-- Diagnósticos JDBC, terminal Java, instalador Windows e atualizador estrutural não se aplicam ao navegador.
-- A exportação comparativa está disponível no diálogo de comparação. Tanto a exportação individual quanto a comparação geram HTML independente que pode ser impresso em PDF pelo navegador.
-- Não verifica BIOS, dimensões, conectores ou compatibilidade física; os preços são os cadastrados, sem consulta em tempo real.
-- Catálogos administrativos podem mudar peças usadas em builds. Edições de builds revalidam compatibilidade.
-- O SDK oficial Supabase JS 2.49.8 está incluído em vendor, com licença MIT. A aplicação depende da rede somente no modo conectado.
+JavaScript com módulos ES, React 19, Vite 8, Tailwind CSS 3.4 e CSS próprio. Lucide React fornece os ícones. Supabase Auth cuida das contas; PostgreSQL armazena catálogo e builds, com políticas RLS para restringir o acesso. O SDK Supabase JS 2.49.8 está em `public/vendor`, com sua licença MIT. As fontes Inter, Space Grotesk e JetBrains Mono são empacotadas localmente.
 
-## Verificação
+| Arquivo ou pasta                           | Responsabilidade                                              |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| `index.html`                               | Entrada da aplicação                                          |
+| `js/app.js`                                | Sessão, navegação e páginas em HTML/JavaScript                |
+| `js/api.js`                                | Persistência remota e demonstrativa                           |
+| `js/config.js`                             | URL e chave pública do Supabase                               |
+| `js/demo.js`                               | Catálogo fictício para avaliação                              |
+| `js/domain.js`                             | Compatibilidade, preços, consumo, FPS e recomendações         |
+| `js/forge.jsx`                             | Componentes React da interface                                |
+| `js/forge.css`                             | Estilos da interface Tech Forge                               |
+| `styles.css`                               | Estilos compartilhados e formulários                          |
+| `public/assets/`                           | Logo e imagens das telas                                      |
+| `public/vendor/`                           | SDK Supabase e licença                                        |
+| `database/base-original.sql`               | Esquema de origem, com tabelas legadas                        |
+| `database/ativar-web.sql`                  | Instalação das tabelas e permissões web                       |
+| `tests/`                                   | Testes de regras, API simulada e interface                    |
+| `package.json` e `package-lock.json`       | Comandos, dependências e versões para instalação reproduzível |
+| `tailwind.config.js` e `postcss.config.js` | Cores, fontes e processamento do CSS                          |
+| `vercel.json`                              | Build e cabeçalhos da hospedagem                              |
+| `.editorconfig` e `.gitignore`             | Convenções de edição e exclusões da entrega                   |
+| `VALIDACAO.md`                             | Verificações e limites da entrega                             |
 
-Execute `npm ci` e `npm test` com Node 24. `npm run test:ui` verifica a compilação local no Microsoft Edge, com `npm run preview` em http://127.0.0.1:4173. As capturas ficam em `test-results/` e não são versionadas. Os testes verificam as regras de negócio portadas do Java. Consulte `VALIDACAO.md` para resultados e limites desta entrega.
+O fluxo começa em `index.html`, que carrega o SDK e `app.js`. Após recuperar a sessão ou entrar na demonstração, `api.js` carrega os dados; a navegação usa o fragmento da URL, como `#montar`. As regras ficam em `domain.js`, separadas da interface para serem testadas sem navegador.
 
-Referências: https://supabase.com/docs/reference/javascript/auth-signinwithpassword e https://supabase.com/docs/guides/database/postgres/row-level-security.
+A interface combina páginas em HTML/JavaScript com componentes React para a navegação lateral, a visão geral e o montador. As raízes React são desmontadas antes da substituição do HTML. Essa integração foi preservada para evitar uma reescrita ampla durante a organização do projeto.
 
-### Dashboard — 09/11/2026
-Cards usam o conteudo da conta: builds recentes, marcas presentes, capas dos jogos e amostra dos benchmarks. Miniaturas dos computadores sao ilustracoes, nao fotos. Microtextos priorizam Montar meu PC e Iniciar nova build.
+## Regras e limites
 
-O montador mantém Voltar/Continuar visíveis em uma barra fixa no topo da lista, com o nome da peça selecionada. Voltar, Recomeçar e Continuar ficam somente na barra superior.
+- CPU e placa-mãe precisam ter o mesmo socket; RAM e placa-mãe precisam usar o mesmo tipo de memória.
+- O consumo considera CPU, placa-mãe e GPU, mais 5 W para RAM e 5 W para SSD. A fonte precisa oferecer esse total com margem de 20%, arredondado para cima.
+- Os preços vêm do catálogo. A soma usa centavos para reduzir diferenças de arredondamento.
+- A análise de FPS usa o cenário cadastrado. Sem CPU exata, busca referência com a mesma GPU e CPU de índice de desempenho mais próximo. Sem medição aplicável, não apresenta estimativa.
+- A recomendação prioriza menor preço dentro da meta. Em empate, prioriza qualidade gráfica e depois o menor FPS que já atende à meta. Prefere RAM de pelo menos 16 GB e SSD de pelo menos 500 GB, quando disponíveis.
+- Não são verificadas BIOS, dimensões, conectores ou compatibilidade física. Não há consulta de preços em tempo real.
+- As miniaturas das builds são ilustrações. Os dados demonstrativos não representam medições reais.
+- O JSON pessoal exportado serve para consulta e portabilidade; não existe restauração automática na interface. A importação de catálogo não deduplica por identificador externo.
+- Contas e builds legadas do desktop não são migradas automaticamente. Backup integral do banco é uma operação administrativa pelo painel do Supabase.
 
-Navegação superior: Voltar, Recomeçar e Continuar juntos; controles inferiores removidos. Smoke valida ausência de duplicatas e reinício da montagem.
+## Configurar o Supabase
+
+Para a demonstração, não é necessário alterar nada. Para o modo conectado, `js/config.js` contém URL e chave **publishable** do projeto. Essa chave é pública e estará no navegador; a proteção depende das permissões e das políticas RLS. Nunca coloque senha de banco, chave secreta ou `service_role` nesse arquivo. O projeto não exige `.env` na configuração atual.
+
+Para uma instalação própria:
+
+1. Crie um projeto Supabase e substitua URL e chave pública em `js/config.js`.
+2. Em um banco vazio, revise e execute `database/base-original.sql` e depois `database/ativar-web.sql`, nessa ordem, pelo SQL Editor. **Não execute em um banco existente sem verificar o esquema e fazer backup.** O segundo script é de instalação única e não é idempotente.
+3. Habilite autenticação por e-mail/senha. Configure Site URL e Redirect URLs para o endereço local exibido pelo Vite e, se necessário, o domínio publicado.
+4. Cadastre uma conta pela aplicação e confirme o e-mail se essa opção estiver habilitada.
+5. Para administrar o catálogo, atribua `app_metadata.role = "admin"` à conta por uma ferramenta administrativa confiável. A primeira conta não recebe esse papel automaticamente. Renove a sessão depois da alteração. Não use `user_metadata` para conceder permissões.
+6. Preencha o catálogo antes de salvar montagens reais. O esquema inicial inclui alguns jogos, mas não um catálogo completo de hardware.
+
+As políticas entregues permitem leitura do catálogo para contas autenticadas, alterações do catálogo para administradores e acesso às builds apenas pelo proprietário. `web_build` referencia o UUID do Supabase Auth; `usuario`, `build` e `componente_importado` são tabelas legadas sem acesso concedido à API web. O banco também valida socket, memória e fonte ao salvar uma build.
+
+Os scripts são preservados como parte da instalação. Esta revisão não os executou no serviço conectado nem alterou seus dados ou permissões.
+
+## Comandos e testes
+
+| Comando           | Finalidade                                          |
+| ----------------- | --------------------------------------------------- |
+| `npm run dev`     | Servidor de desenvolvimento local                   |
+| `npm run build`   | Gera a versão de produção em `dist/`                |
+| `npm run preview` | Serve o build local para conferência                |
+| `npm test`        | Testes de domínio e API com cliente simulado        |
+| `npm run test:ui` | Teste de interface com Playwright no Microsoft Edge |
+
+Para o teste de interface, tenha o Microsoft Edge instalado. Execute `npm run build` e mantenha `npm run preview -- --port 4173 --strictPort` aberto em outro terminal antes de rodar `npm run test:ui`. O teste usa a demonstração e gera capturas em `test-results/`. A variável opcional `TEST_URL` permite selecionar outro servidor local. Não direcione o teste a um ambiente compartilhado.
+
+Os resultados e as verificações que dependem de contas reais estão em `VALIDACAO.md`.
+
+## Entrega e hospedagem
+
+Para entregar em ZIP, inclua código, `public/`, `database/`, `tests/`, documentos, exemplos e configurações, inclusive `package-lock.json`. Exclua `.git/`, `node_modules/`, `dist/`, `.vercel/`, `test-results/`, logs, arquivos pessoais e eventuais arquivos com segredos. Depois de extrair, siga os comandos de instalação deste README.
+
+Na Vercel: framework **Vite**, instalação `npm ci`, build `npm run build` e saída `dist`. Somente a saída compilada deve ser servida; SQL e testes não são arquivos públicos da aplicação. Configurar o provedor Git e as URLs do Auth depende da conta responsável pela hospedagem.
+
+Antes de publicar uma nova versão, execute os testes e a compilação descritos acima.

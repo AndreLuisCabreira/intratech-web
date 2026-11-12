@@ -7,3 +7,7 @@ node_modules/
 
 dist/
 test-results/
+.DS_Store
+Thumbs.db
+*.zip
+.idea/
