@@ -63,7 +63,6 @@ JavaScript com módulos ES, React 19, Vite 8, Tailwind CSS 3.4 e CSS próprio. L
 | `tailwind.config.js` e `postcss.config.js` | Cores, fontes e processamento do CSS                          |
 | `vercel.json`                              | Build e cabeçalhos da hospedagem                              |
 | `.editorconfig` e `.gitignore`             | Convenções de edição e exclusões da entrega                   |
-| `VALIDACAO.md`                             | Verificações e limites da entrega                             |
 
 O fluxo começa em `index.html`, que carrega o SDK e `app.js`. Após recuperar a sessão ou entrar na demonstração, `api.js` carrega os dados; a navegação usa o fragmento da URL, como `#montar`. As regras ficam em `domain.js`, separadas da interface para serem testadas sem navegador.
 
@@ -110,7 +109,8 @@ Os scripts são preservados como parte da instalação. Esta revisão não os ex
 
 Para o teste de interface, tenha o Microsoft Edge instalado. Execute `npm run build` e mantenha `npm run preview -- --port 4173 --strictPort` aberto em outro terminal antes de rodar `npm run test:ui`. O teste usa a demonstração e gera capturas em `test-results/`. A variável opcional `TEST_URL` permite selecionar outro servidor local. Não direcione o teste a um ambiente compartilhado.
 
-Os resultados e as verificações que dependem de contas reais estão em `VALIDACAO.md`.
+
+Os testes de interface usam dados demonstrativos locais. Login e gravações reais no Supabase precisam ser verificados com contas de teste.
 
 ## Entrega e hospedagem
 
